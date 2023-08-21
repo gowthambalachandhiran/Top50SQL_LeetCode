@@ -1,30 +1,27 @@
-1907. Count Salary Categories
-Medium
-196
-48
+1978. Employees Whose Manager Left the Company
+Easy
+183
+18
 Companies
 SQL Schema
 Pandas Schema
-Table: Accounts
+Table: Employees
 
-+-------------+------+
-| Column Name | Type |
-+-------------+------+
-| account_id  | int  |
-| income      | int  |
-+-------------+------+
-account_id is the primary key (column with unique values) for this table.
-Each row contains information about the monthly income for one bank account.
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| employee_id | int      |
+| name        | varchar  |
+| manager_id  | int      |
+| salary      | int      |
++-------------+----------+
+In SQL, employee_id is the primary key for this table.
+This table contains information about the employees, their salary, and the ID of their manager. Some employees do not have a manager (manager_id is null). 
  
 
-Write a solution to calculate the number of bank accounts for each salary category. The salary categories are:
+Find the IDs of the employees whose salary is strictly less than $30000 and whose manager left the company. When a manager leaves the company, their information is deleted from the Employees table, but the reports still have their manager_id set to the manager that left.
 
-"Low Salary": All the salaries strictly less than $20000.
-"Average Salary": All the salaries in the inclusive range [$20000, $50000].
-"High Salary": All the salaries strictly greater than $50000.
-The result table must contain all three categories. If there are no accounts in a category, return 0.
-
-Return the result table in any order.
+Return the result table ordered by employee_id.
 
 The result format is in the following example.
 
@@ -32,38 +29,44 @@ The result format is in the following example.
 
 Example 1:
 
-Input: 
-Accounts table:
-+------------+--------+
-| account_id | income |
-+------------+--------+
-| 3          | 108939 |
-| 2          | 12747  |
-| 8          | 87709  |
-| 6          | 91796  |
-+------------+--------+
+Input:  
+Employees table:
++-------------+-----------+------------+--------+
+| employee_id | name      | manager_id | salary |
++-------------+-----------+------------+--------+
+| 3           | Mila      | 9          | 60301  |
+| 12          | Antonella | null       | 31000  |
+| 13          | Emery     | null       | 67084  |
+| 1           | Kalel     | 11         | 21241  |
+| 9           | Mikaela   | null       | 50937  |
+| 11          | Joziah    | 6          | 28485  |
++-------------+-----------+------------+--------+
 Output: 
-+----------------+----------------+
-| category       | accounts_count |
-+----------------+----------------+
-| Low Salary     | 1              |
-| Average Salary | 0              |
-| High Salary    | 3              |
-+----------------+----------------+
++-------------+
+| employee_id |
++-------------+
+| 11          |
++-------------+
+
 Explanation: 
-Low Salary: Account 2.
-Average Salary: No accounts.
-High Salary: Accounts 3, 6, and 8.
+The employees with a salary less than $30000 are 1 (Kalel) and 11 (Joziah).
+Kalel's manager is employee 11, who is still in the company (Joziah).
+Joziah's manager is employee 6, who left the company because there is no row for employee 6 as it was deleted.
+Accepted
+27.3K
+Submissions
+57.2K
+Acceptance Rate
+47.6%
+Seen this question in a real interview before?
+1/4
+Yes
+No
+Discussion (3)
+Related Topics
+Copyright ©️ 2023 LeetCode All rights reserved
 
 Solution:
-SELECT 'Low Salary' as category, COUNT(account_id) as accounts_count
-FROM Accounts
-WHERE income<20000
-UNION
-SELECT 'Average Salary' as category, COUNT(*)
-FROM Accounts
-WHERE income>=20000 AND income<=50000
-UNION
-SELECT 'High Salary' as category, COUNT(*)
-FROM Accounts
-WHERE income>50000
+
+select employee_id from employees where manager_id not in (select distinct employee_id from employees) and salary  < 30000 
+order by 1
